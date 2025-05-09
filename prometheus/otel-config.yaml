@@ -20,10 +20,37 @@ exporters:
     verbosity: detailed
   prometheus:
     endpoint: "0.0.0.0:8889"
+  clickhouse:
+    endpoint: http://host.docker.internal:8123
+    username: default
+    password: default
+    database: default
+    async_insert: true
+    ttl: 72h
+    compress: gzip
+    create_schema: true
+    timeout: 5s
+    metrics_tables:
+      gauge: 
+        name: "otel_metrics_gauge"
+      sum: 
+        name: "otel_metrics_sum"
+      summary: 
+        name: "otel_metrics_summary"
+      histogram: 
+        name: "otel_metrics_histogram"
+      exponential_histogram: 
+        name: "otel_metrics_exp_histogram"
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 300s
+    cluster_name: chcluster
 
 service:
   pipelines:
     metrics:
       receivers: [hostmetrics]
       processors: [batch]
-      exporters: [prometheus]
+      exporters: [prometheus, clickhouse]

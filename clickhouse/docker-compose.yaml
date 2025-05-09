@@ -40,6 +40,8 @@ services:
     volumes:
       - ./config/clickhouse1/config.d/config.xml:/etc/clickhouse-server/config.xml
       - ./config/clickhouse1/users.d/users.xml:/etc/clickhouse-server/users.d/users.xml
+      - ./volume/clickhouse1/data:/var/lib/clickhouse/data
+      - ./volume/clickhouse1/logs:/var/log/clickhouse-server
     ports:
       - '8123:8123'
       - '9000:9000'
@@ -60,6 +62,8 @@ services:
     volumes:
       - ./config/clickhouse2/config.d/config.xml:/etc/clickhouse-server/config.xml
       - ./config/clickhouse2/users.d/users.xml:/etc/clickhouse-server/users.d/users.xml
+      - ./volume/clickhouse2/data:/var/lib/clickhouse/data
+      - ./volume/clickhouse2/logs:/var/log/clickhouse-server
     ports:
       - '8124:8123'
       - '9001:9000'
