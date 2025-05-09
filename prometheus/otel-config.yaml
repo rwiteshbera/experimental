@@ -1,0 +1,29 @@
+receivers:
+  hostmetrics:
+    collection_interval: 5s
+    scrapers:
+      memory:
+      load:
+      processes:
+      system:
+      disk:
+      filesystem:
+      network:
+
+processors:
+  batch:
+    timeout: 5s
+    send_batch_size: 1000
+
+exporters:
+  debug:
+    verbosity: detailed
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+
+service:
+  pipelines:
+    metrics:
+      receivers: [hostmetrics]
+      processors: [batch]
+      exporters: [prometheus]
