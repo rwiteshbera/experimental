@@ -16,66 +16,66 @@ services:
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       ALLOW_PLAINTEXT_LISTENER: 'yes'
       KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: 'true'
-    networks:
-      - shared-network
+#     networks:
+#       - shared-network
 
-  zookeeper:
-    image: zookeeper:3.7
-    hostname: zookeeper
-    container_name: zookeeper
-    ports:
-      - '2181:2181'
-    networks:
-      - shared-network
+#   zookeeper:
+#     image: zookeeper:3.7
+#     hostname: zookeeper
+#     container_name: zookeeper
+#     ports:
+#       - '2181:2181'
+#     networks:
+#       - shared-network
 
-  clickhouse1:
-    image: clickhouse/clickhouse-server:23.9.1.1854
-    hostname: clickhouse1
-    container_name: clickhouse1
-    environment:
-      - CLICKHOUSE_DB=default
-      - CLICKHOUSE_USER=default
-      - CLICKHOUSE_PASSWORD=default
-      - CLICKHOUSE_HOST=clickhouse1:9000
-    volumes:
-      - ./config/clickhouse1/config.d/config.xml:/etc/clickhouse-server/config.xml
-      - ./config/clickhouse1/users.d/users.xml:/etc/clickhouse-server/users.d/users.xml
-      - ./volume/clickhouse1/data:/var/lib/clickhouse/data
-      - ./volume/clickhouse1/logs:/var/log/clickhouse-server
-    ports:
-      - '8123:8123'
-      - '9000:9000'
-    depends_on:
-      - zookeeper
-    networks:
-      - shared-network
+#   clickhouse1:
+#     image: clickhouse/clickhouse-server:23.9.1.1854
+#     hostname: clickhouse1
+#     container_name: clickhouse1
+#     environment:
+#       - CLICKHOUSE_DB=default
+#       - CLICKHOUSE_USER=default
+#       - CLICKHOUSE_PASSWORD=default
+#       - CLICKHOUSE_HOST=clickhouse1:9000
+#     volumes:
+#       - ./config/clickhouse1/config.d/config.xml:/etc/clickhouse-server/config.xml
+#       - ./config/clickhouse1/users.d/users.xml:/etc/clickhouse-server/users.d/users.xml
+#       - ./volume/clickhouse1/data:/var/lib/clickhouse/data
+#       - ./volume/clickhouse1/logs:/var/log/clickhouse-server
+#     ports:
+#       - '8123:8123'
+#       - '9000:9000'
+#     depends_on:
+#       - zookeeper
+#     networks:
+#       - shared-network
 
-  clickhouse2:
-    image: clickhouse/clickhouse-server:23.9.1.1854
-    hostname: clickhouse2
-    container_name: clickhouse2
-    environment:
-      - CLICKHOUSE_DB=default
-      - CLICKHOUSE_USER=default
-      - CLICKHOUSE_PASSWORD=default
-      - CLICKHOUSE_HOST=clickhouse1:9000
-    volumes:
-      - ./config/clickhouse2/config.d/config.xml:/etc/clickhouse-server/config.xml
-      - ./config/clickhouse2/users.d/users.xml:/etc/clickhouse-server/users.d/users.xml
-      - ./volume/clickhouse2/data:/var/lib/clickhouse/data
-      - ./volume/clickhouse2/logs:/var/log/clickhouse-server
-    ports:
-      - '8124:8123'
-      - '9001:9000'
-    depends_on:
-      - zookeeper
-    networks:
-      - shared-network
+#   clickhouse2:
+#     image: clickhouse/clickhouse-server:23.9.1.1854
+#     hostname: clickhouse2
+#     container_name: clickhouse2
+#     environment:
+#       - CLICKHOUSE_DB=default
+#       - CLICKHOUSE_USER=default
+#       - CLICKHOUSE_PASSWORD=default
+#       - CLICKHOUSE_HOST=clickhouse1:9000
+#     volumes:
+#       - ./config/clickhouse2/config.d/config.xml:/etc/clickhouse-server/config.xml
+#       - ./config/clickhouse2/users.d/users.xml:/etc/clickhouse-server/users.d/users.xml
+#       - ./volume/clickhouse2/data:/var/lib/clickhouse/data
+#       - ./volume/clickhouse2/logs:/var/log/clickhouse-server
+#     ports:
+#       - '8124:8123'
+#       - '9001:9000'
+#     depends_on:
+#       - zookeeper
+#     networks:
+#       - shared-network
 
-volumes:
-  clickhouse1_data:
-  clickhouse2_data:
+# volumes:
+#   clickhouse1_data:
+#   clickhouse2_data:
 
-networks:
-  shared-network:
-    driver: bridge
+# networks:
+#   shared-network:
+#     driver: bridge

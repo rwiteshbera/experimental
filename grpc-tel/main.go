@@ -24,25 +24,25 @@ func main() {
 	}
 	defer conn.Close()
 
-	// add metadata to the request
-	md := metadata.New(map[string]string{
-		"Authorization": "<your_authorization_token>",
-	})
-
 	client := metricspb.NewMetricsServiceClient(conn)
+
+	md := metadata.New(map[string]string{
+		"Authorization": "",
+	})
 
 	// Send each metric type with a 1-second delay
 	metricTypes := []string{
-		"monotonic_cumulative_sum",
+		// "monotonic_cumulative_sum",
 		// "non_monotonic_sum",
 		// "delta_sum",
 		// "gauge",
-		// "cumulative_histogram",
+		"cumulative_histogram",
 		// "delta_histogram",
 	}
 
 	for _, metricType := range metricTypes {
 		req := buildMetricsRequestForType(metricType)
+
 		ctx := metadata.NewOutgoingContext(context.Background(), md)
 
 		resp, err := client.Export(ctx, req)
@@ -95,13 +95,10 @@ func buildMetricsRequestForType(metricType string) *metricspb.ExportMetricsServi
 							{
 								TimeUnixNano:      now,
 								StartTimeUnixNano: now - uint64(60*time.Second.Nanoseconds()),
-								Value:             &otlpmetrics.NumberDataPoint_AsDouble{AsDouble: 1},
+								Value:             &otlpmetrics.NumberDataPoint_AsDouble{AsDouble: 20},
 								Attributes: []*commonpb.KeyValue{
 									{Key: "endpoint", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "/api/v1/users"}}},
 									{Key: "method", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "GET"}}},
-									{Key: "__name__", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "KloudMate.requests.total"}}},
-									{Key: "job", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "grpc-test"}}},
-									{Key: "defaultWorkspaceId", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "test-workspace"}}},
 								},
 							},
 						},
@@ -123,12 +120,9 @@ func buildMetricsRequestForType(metricType string) *metricspb.ExportMetricsServi
 							{
 								TimeUnixNano:      now,
 								StartTimeUnixNano: timestamp10sAgo,
-								Value:             &otlpmetrics.NumberDataPoint_AsDouble{AsDouble: float64(10 + rand.Intn(20) - 10)},
+								Value:             &otlpmetrics.NumberDataPoint_AsDouble{AsDouble: 35},
 								Attributes: []*commonpb.KeyValue{
 									{Key: "instance", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "grpc-node-1"}}},
-									{Key: "__name__", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "KloudMate.active.goroutines"}}},
-									{Key: "job", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "grpc-test"}}},
-									{Key: "defaultWorkspaceId", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "test-workspace"}}},
 								},
 							},
 						},
@@ -150,13 +144,10 @@ func buildMetricsRequestForType(metricType string) *metricspb.ExportMetricsServi
 							{
 								TimeUnixNano:      now,
 								StartTimeUnixNano: timestamp10sAgo,
-								Value:             &otlpmetrics.NumberDataPoint_AsDouble{AsDouble: 8},
+								Value:             &otlpmetrics.NumberDataPoint_AsDouble{AsDouble: 100},
 								Attributes: []*commonpb.KeyValue{
 									{Key: "endpoint", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "/api/v1/metrics"}}},
 									{Key: "method", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "POST"}}},
-									{Key: "__name__", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "KloudMate.requests.delta"}}},
-									{Key: "job", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "grpc-test"}}},
-									{Key: "defaultWorkspaceId", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "test-workspace"}}},
 								},
 							},
 						},
@@ -177,12 +168,9 @@ func buildMetricsRequestForType(metricType string) *metricspb.ExportMetricsServi
 						DataPoints: []*otlpmetrics.NumberDataPoint{
 							{
 								TimeUnixNano: now,
-								Value:        &otlpmetrics.NumberDataPoint_AsDouble{AsDouble: 950},
+								Value:        &otlpmetrics.NumberDataPoint_AsDouble{AsDouble: 150},
 								Attributes: []*commonpb.KeyValue{
 									{Key: "host", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "test-host"}}},
-									{Key: "__name__", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "KloudMate.system.memory.usage"}}},
-									{Key: "job", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "grpc-test"}}},
-									{Key: "defaultWorkspaceId", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "test-workspace"}}},
 								},
 							},
 						},
@@ -204,13 +192,8 @@ func buildMetricsRequestForType(metricType string) *metricspb.ExportMetricsServi
 								StartTimeUnixNano: timestamp10sAgo,
 								Count:             50,
 								Sum:               func() *float64 { f := 1000.0; return &f }(),
-								ExplicitBounds:    []float64{5, 10, 25, 50, 100, 250, 500, 1000},
-								BucketCounts:      []uint64{5, 10, 15, 10, 5, 3, 2, 0, 0},
 								Attributes: []*commonpb.KeyValue{
 									{Key: "endpoint", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "/api/v1/data"}}},
-									{Key: "__name__", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "KloudMate.request.duration"}}},
-									{Key: "job", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "grpc-test"}}},
-									{Key: "defaultWorkspaceId", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "test-workspace"}}},
 								},
 							},
 						},
@@ -237,9 +220,6 @@ func buildMetricsRequestForType(metricType string) *metricspb.ExportMetricsServi
 								BucketCounts:      []uint64{1, 2, 3, 2, 1, 1},
 								Attributes: []*commonpb.KeyValue{
 									{Key: "endpoint", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "/api/v1/status"}}},
-									{Key: "__name__", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "KloudMate.request.duration.delta"}}},
-									{Key: "job", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "grpc-test"}}},
-									{Key: "defaultWorkspaceId", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "test-workspace"}}},
 								},
 							},
 						},
