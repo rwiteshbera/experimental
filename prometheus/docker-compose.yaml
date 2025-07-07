@@ -11,20 +11,17 @@ services:
       - 4317:4317 # OTLP gRPC receiver
       - 4318:4318 # OTLP http receiver
       - 55679:55679 # zpages extension
-    networks:
-      - shared-network
 
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"
+      - "4000:3000"
     volumes:
       - ./volume/grafana-storage:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
-    networks:
-      - shared-network
+
 
   prometheus:
     image: prom/prometheus:latest
@@ -37,10 +34,5 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
       - "--web.enable-lifecycle"
-    networks:
-      - shared-network
 
-networks:
-  shared-network:
-    external: true
-    name: shared-network
+
