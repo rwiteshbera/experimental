@@ -13,7 +13,7 @@ services:
     environment:
       - CLICKHOUSE_DB=default
       - CLICKHOUSE_USER=default
-      - CLICKHOUSE_PASSWORD=default
+      - CLICKHOUSE_PASSWORD=
       - CLICKHOUSE_HOST=clickhouse1:9000
     volumes:
       - ./config/clickhouse1/config.d/config.xml:/etc/clickhouse-server/config.xml
@@ -33,7 +33,7 @@ services:
     environment:
       - CLICKHOUSE_DB=default
       - CLICKHOUSE_USER=default
-      - CLICKHOUSE_PASSWORD=default
+      - CLICKHOUSE_PASSWORD=
       - CLICKHOUSE_HOST=clickhouse1:9000
     volumes:
       - ./config/clickhouse2/config.d/config.xml:/etc/clickhouse-server/config.xml

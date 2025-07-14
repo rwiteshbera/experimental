@@ -27,7 +27,7 @@ func main() {
 	client := metricspb.NewMetricsServiceClient(conn)
 
 	md := metadata.New(map[string]string{
-		"Authorization": "",
+		"Authorization": "sk_os3wltDw6M9jl3baCdGxhK8E",
 	})
 
 	// Send each metric type with a 1-second delay
@@ -68,7 +68,7 @@ func buildMetricsRequestForType(metricType string) *metricspb.ExportMetricsServi
 			{
 				Resource: &resourcepb.Resource{
 					Attributes: []*commonpb.KeyValue{
-						{Key: "service.name", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "grpc-metrics-demo"}}},
+						{Key: "service.name", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "grpc-metrics-demo-2"}}},
 						{Key: "environment", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "development"}}},
 					},
 				},
@@ -179,10 +179,39 @@ func buildMetricsRequestForType(metricType string) *metricspb.ExportMetricsServi
 			})
 
 	case "cumulative_histogram":
+		bounds := []float64{50, 100, 150, 200, 250, 300}
+		bucketCounts := []uint64{50, 40, 30, 20, 10, 5} // len = len(bounds) + 1
+
+		// Compute total count
+		var totalCount uint64
+		for _, c := range bucketCounts {
+			totalCount += c
+		}
+
+		// Estimate sum using bucket midpoints
+		var totalSum float64
+		for i, count := range bucketCounts {
+			var midpoint float64
+			if i < len(bounds) {
+				lower := 0.0
+				if i > 0 {
+					lower = bounds[i-1]
+				}
+				upper := bounds[i]
+				midpoint = (lower + upper) / 2
+			} else {
+				// Last bucket is overflow: estimate midpoint as 1.5x last bound
+				midpoint = bounds[len(bounds)-1] * 1.5
+			}
+			totalSum += float64(count) * midpoint
+		}
+
+		sum := totalSum // avoid pointer-to-temp issue
+
 		req.ResourceMetrics[0].ScopeMetrics[0].Metrics = append(req.ResourceMetrics[0].ScopeMetrics[0].Metrics,
 			&otlpmetrics.Metric{
 				Name:        "KloudMate.request.duration",
-				Description: "Request duration distribution",
+				Description: "Request duration distribution (cumulative histogram)",
 				Unit:        "ms",
 				Data: &otlpmetrics.Metric_Histogram{
 					Histogram: &otlpmetrics.Histogram{
@@ -190,10 +219,15 @@ func buildMetricsRequestForType(metricType string) *metricspb.ExportMetricsServi
 							{
 								TimeUnixNano:      now,
 								StartTimeUnixNano: timestamp10sAgo,
-								Count:             50,
-								Sum:               func() *float64 { f := 1000.0; return &f }(),
+								Count:             totalCount,
+								Sum:               &sum,
+								ExplicitBounds:    bounds,
+								BucketCounts:      bucketCounts,
 								Attributes: []*commonpb.KeyValue{
-									{Key: "endpoint", Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "/api/v1/data"}}},
+									{
+										Key:   "endpoint",
+										Value: &commonpb.AnyValue{Value: &commonpb.AnyValue_StringValue{StringValue: "/api/v1/data"}},
+									},
 								},
 							},
 						},
