@@ -1,10 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"time"
+	"log"
+	"strings"
 )
 
 func main() {
-	fmt.Println(time.Since(time.UnixMilli(1751179796000)))
+	key := "abc:cde:fgh"
+	abc := strings.SplitN(key, ":", 3)
+	log.Println(abc[len(abc)-1])
 }

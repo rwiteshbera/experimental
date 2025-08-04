@@ -2,6 +2,8 @@
     <profiles>
         <default>
             <date_time_input_format>best_effort</date_time_input_format>
+             <allow_experimental_time_series_aggregate_functions>1</allow_experimental_time_series_aggregate_functions>
+
         </default>
     </profiles>
     <users>
@@ -12,6 +14,7 @@
             </networks>
             <profile>default</profile>
             <quota>default</quota>
+
         </default>
     </users>
 </clickhouse>

@@ -1,15 +1,13 @@
-services:
+services:  
   zookeeper:
     image: zookeeper:3.7
     hostname: zookeeper
-    container_name: zookeeper
     ports:
       - '2181:2181'
 
   clickhouse1:
     image: clickhouse/clickhouse-server:latest
     hostname: clickhouse1
-    container_name: clickhouse1
     environment:
       - CLICKHOUSE_DB=default
       - CLICKHOUSE_USER=default
@@ -29,7 +27,6 @@ services:
   clickhouse2:
     image: clickhouse/clickhouse-server:latest
     hostname: clickhouse2
-    container_name: clickhouse2
     environment:
       - CLICKHOUSE_DB=default
       - CLICKHOUSE_USER=default
