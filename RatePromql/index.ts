@@ -75,6 +75,7 @@ function rate(
     return rate;
 }
 
+
 const input1: TimeSeries = {
   labels: { job: "api" },
   samples: [

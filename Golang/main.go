@@ -1,12 +1,10 @@
 package main
 
 import (
-	"log"
-	"strings"
+	"fmt"
+	"runtime"
 )
 
 func main() {
-	key := "abc:cde:fgh"
-	abc := strings.SplitN(key, ":", 3)
-	log.Println(abc[len(abc)-1])
+	fmt.Println(runtime.GOMAXPROCS(0))
 }
