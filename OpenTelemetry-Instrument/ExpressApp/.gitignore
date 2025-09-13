@@ -1,6 +1,4 @@
-volume
-
-# dependencies
+# dependencies (bun install)
 node_modules
 
 # output
@@ -31,10 +29,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # IntelliJ based IDEs
 .idea
-
-# Vscode and Cursor
-.vscode
-.cursor
 
 # Finder (MacOS) folder config
 .DS_Store

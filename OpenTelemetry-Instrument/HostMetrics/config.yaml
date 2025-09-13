@@ -1,0 +1,47 @@
+receivers:
+  hostmetrics:
+    collection_interval: 5s
+    scrapers:
+      cpu:
+        metrics:
+          system.cpu.frequency:
+            enabled: true
+          system.cpu.utilization:
+            enabled: true
+      memory:
+        metrics:
+          system.memory.utilization:
+            enabled: true
+
+processors:
+  resourcedetection:
+    detectors: [env, system, docker]
+    timeout: 15s
+    override: false
+
+  resource:
+    attributes:
+      - key: service.name
+        action: insert
+        from_attribute: host.name
+      - key: service.workspace
+        action: insert
+        value: dev
+
+  batch:
+    timeout: 30s
+    send_batch_size: 1000
+
+exporters:
+  debug:
+    verbosity: detailed
+  otlphttp:
+    endpoint: "http://host.docker.internal:4318"
+    timeout: 5s
+
+service:
+  pipelines:
+    metrics:
+      receivers: [hostmetrics]
+      processors: [resourcedetection, resource, batch]
+      exporters: [debug, otlphttp]
